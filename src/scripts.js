@@ -3,31 +3,33 @@ import 'bootstrap';
 import './css/bootstrap.min.css';
 import './css/styles.css';
 
-$(document).ready(function(){
+$(document).ready(function() {
+  $('#movieInfo').click(function() {
+    const movie = $('#movie').val();
+    $('#movie').val("");
+    console.log(movie);
 
-  const boardSetup = [5,3,'','',7,'','','','',6,'','',1,9,5,'','','','',9,8,'','','','',6,'',8,'','','',6,'','','',3,4,'','',8,'',3,'','',1,7,'','','',2,'','','',6,'',6,'','','','',2,8,'','','','',4,1,9,'','',5,'','','','',8,'','',7,9];
-  console.log(boardSetup.length);
+    let request = new XMLHttpRequest();
+    const url = `http://www.omdbapi.com/?t=${movie}&apikey=61c95e4f`;
 
-  const allBlanks = $(':input');
-  for (var i = 0; i < boardSetup.length; i++) {
-    if (boardSetup[i]) {
-      $(allBlanks[i]).val(boardSetup[i]);
-    }
-  }
-
-  $('button').click(function() {
-    const thisBoard = [];
-    let thisRow = [];
-    const allNumberInputs = $(':input');
-    for (var i = 0; i < allNumberInputs.length; i++) {
-      const thisNumber = parseInt($(allNumberInputs[i]).val());
-      thisRow.push(thisNumber);
-      if (thisRow.length === 9) {
-        thisBoard.push(thisRow);
-        thisRow = [];
+    request.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200) {
+        const response = JSON.parse(this.responseText);
+        console.log(response);
+        getElements(response);
       }
-    }
-    console.log(thisBoard);
+    };
 
+    request.open("GET", url, true);
+    request.send();
+
+    const getElements = function(response) {
+      $('.showTitle').text(`The movie ${movie} is ${response.Title}`);
+      // $('.showTemp').text(`The movie is rate ${response.Rated}`);
+      $('.showSource').text(`The movie is rate ${response.Ratings[2].Source}`);
+      $('.showValue').text(`The movie is rate ${response.Ratings[2].Value}`);
+    };
   });
 });
+
+// 61c95e4f
